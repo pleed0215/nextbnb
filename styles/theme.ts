@@ -1,0 +1,106 @@
+import { DefaultTheme } from "styled-components";
+
+export const lightTheme: DefaultTheme = {
+  color: {
+    primary: "black",
+    secondary: "rgb(96,96, 96)",
+    border: "rgb(219,219,219)",
+    link: "#0095f6",
+    button: "white",
+    like: "#ED4956",
+  },
+  background: {
+    primary: "#fafafa",
+    secondary: "white",
+    button: "#4795f6",
+    avatar: "#dbdbdb",
+  },
+  palette: {
+    cardinal: "#a41850",
+    davidson_orange: "#c13515",
+    tawny: "#d93900",
+    amaranth: "#e51e53",
+    orange: "#fc642d",
+    main_pink: "#ff385c",
+    bittersweet: "#ff5a5f",
+    black: "#222222",
+    charcoal: "#484848",
+    snow: "#fff8f6",
+    gray_48: "#484848",
+    gray_71: "#717171",
+    gray_76: "#767676",
+    gray_80: "#808080",
+    gray_85: "#858585",
+    gray_aa: "#aaaaaa",
+    gray_bb: "#bbbbbb",
+    gray_b0: "#b0b0b0",
+    gray_c4: "#c4c4c4",
+    gray_dd: "#dddddd",
+    gray_eb: "#ebebeb",
+    gray_e5: "#e5e5e5",
+    gray_f7: "#f7f7f7",
+    dark_cyan: "#008489",
+    green: "#008a05",
+  },
+};
+export const darkTheme: DefaultTheme = {
+  color: {
+    primary: "#eee",
+    secondary: "rgb(78,171,205)",
+    border: "rgb(219,219,219)",
+    link: "#0095f6",
+    button: "white",
+    like: "#ED4956",
+  },
+  background: {
+    primary: "#333",
+    secondary: "#454545",
+    button: "#4795f6",
+    avatar: "#dbdbdb",
+  },
+  palette: {
+    cardinal: "#a41850",
+    davidson_orange: "#c13515",
+    tawny: "#d93900",
+    amaranth: "#e51e53",
+    orange: "#fc642d",
+    main_pink: "#ff385c",
+    bittersweet: "#ff5a5f",
+    black: "#222222",
+    charcoal: "#484848",
+    snow: "#fff8f6",
+    gray_48: "#484848",
+    gray_71: "#717171",
+    gray_76: "#767676",
+    gray_80: "#808080",
+    gray_85: "#858585",
+    gray_aa: "#aaaaaa",
+    gray_bb: "#bbbbbb",
+    gray_b0: "#b0b0b0",
+    gray_c4: "#c4c4c4",
+    gray_dd: "#dddddd",
+    gray_eb: "#ebebeb",
+    gray_e5: "#e5e5e5",
+    gray_f7: "#f7f7f7",
+    dark_cyan: "#008489",
+    green: "#008a05",
+  },
+};
+
+// W3School.com 기준 5단계 breakpoint
+export const breakpoints = {
+  xs: "480px",
+  sm: "600px",
+  md: "768px",
+  lg: "992px",
+  xl: "1200px",
+};
+
+// https://jsramblings.com/how-to-use-media-queries-with-styled-components/
+export const device = {
+  xs: `@media screen and (max-width: ${breakpoints.sm})`,
+  sm: `@media screen and (min-width: ${breakpoints.sm})`,
+  md: `@media screen and (min-width: ${breakpoints.md})`,
+  lg: `@media screen and (min-width: ${breakpoints.lg})`,
+  xl: `@media screen and (min-width: ${breakpoints.xl})`,
+};
