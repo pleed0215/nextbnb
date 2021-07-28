@@ -10,6 +10,7 @@ import { SubmitErrorHandler, SubmitHandler, useForm } from "react-hook-form";
 import Selector from "../common/Selector";
 import { dayList, monthList, yearList } from "../../lib/staticData";
 import Button from "../common/Button";
+import { signupAPI } from "../../lib/api/auth";
 
 const SignUpModalBlock = styled.div`
   width: 568px;
@@ -88,8 +89,18 @@ const SignUpModal: React.FC<{ close: () => void }> = ({ close }) => {
   });
   const [hideText, setHideText] = useState(true);
 
-  const onValid: SubmitHandler<InputState> = (data) => {
-    console.log(data);
+  const onValid: SubmitHandler<InputState> = async (data) => {
+    try {
+      const { day, month, year, ...rest } = data;
+      const birthday = new Date(+year, +month, +day).toISOString();
+      const signupBody = {
+        ...rest,
+        birthday,
+      };
+      await signupAPI(signupBody);
+    } catch (e) {
+      console.log(e);
+    }
   };
   const onInvalid: SubmitErrorHandler<InputState> = (data, event) => {
     console.log(data);
