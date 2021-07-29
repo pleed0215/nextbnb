@@ -11,7 +11,7 @@ export type StoredUserType = {
 };
 
 const getList = () => {
-  const usersBuffer = readFileSync("/data/users.json");
+  const usersBuffer = readFileSync("data/users.json");
   const usersString = usersBuffer.toString();
   if (!usersString) {
     return [];
@@ -29,7 +29,7 @@ const exist = ({ email }: ExistUserInput) => {
 };
 
 const write = (users: StoredUserType[]) => {
-  writeFileSync("/data/users.json", JSON.stringify(users));
+  writeFileSync("data/users.json", JSON.stringify(users));
 };
 
 const users = {

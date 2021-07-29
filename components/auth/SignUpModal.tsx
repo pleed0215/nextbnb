@@ -11,6 +11,8 @@ import Selector from "../common/Selector";
 import { dayList, monthList, yearList } from "../../lib/staticData";
 import Button from "../common/Button";
 import { signupAPI } from "../../lib/api/auth";
+import { useDispatch } from "react-redux";
+import { setLoggedUser } from "../../store/user";
 
 const SignUpModalBlock = styled.div`
   width: 568px;
@@ -83,11 +85,12 @@ const SignUpModal: React.FC<{ close: () => void }> = ({ close }) => {
     day: "일",
     year: "년",
   };
-  const { register, handleSubmit, setValue } = useForm<InputState>({
+  const { register, handleSubmit, setValue, formState } = useForm<InputState>({
     defaultValues,
     mode: "onBlur",
   });
   const [hideText, setHideText] = useState(true);
+  const dispatch = useDispatch();
 
   const onValid: SubmitHandler<InputState> = async (data) => {
     try {
@@ -97,7 +100,8 @@ const SignUpModal: React.FC<{ close: () => void }> = ({ close }) => {
         ...rest,
         birthday,
       };
-      await signupAPI(signupBody);
+      const { data: user } = await signupAPI(signupBody);
+      dispatch(setLoggedUser(user));
     } catch (e) {
       console.log(e);
     }
@@ -112,12 +116,25 @@ const SignUpModal: React.FC<{ close: () => void }> = ({ close }) => {
 
   useEffect(() => {
     register("email", {
-      required: true,
+      required: {
+        value: true,
+        message: "이메일을 입력해주세요.",
+      },
     });
     register("firstname", {
       required: true,
+      maxLength: {
+        value: 20,
+        message: "너무 긴 이름입니다(20글자 이하)",
+      },
     });
-    register("lastname", { required: false });
+    register("lastname", {
+      required: false,
+      maxLength: {
+        value: 20,
+        message: "너무 긴 이름입니다(20글자 이하)",
+      },
+    });
     register("password", {
       required: true,
       minLength: 8,
@@ -146,6 +163,9 @@ const SignUpModal: React.FC<{ close: () => void }> = ({ close }) => {
             name="email"
             icon={<EmailIcon />}
             onChange={onChange}
+            isValid={Boolean(formState.errors.email)}
+            useValidation
+            errorMessage={formState.errors.email?.message}
           />
         </div>
         <div className="input-wrapper">
@@ -155,6 +175,9 @@ const SignUpModal: React.FC<{ close: () => void }> = ({ close }) => {
             name="firstname"
             icon={<PersonIcon />}
             onChange={onChange}
+            isValid={Boolean(formState.errors.firstname)}
+            useValidation
+            errorMessage={formState.errors.firstname?.message}
           />
         </div>
         <div className="input-wrapper">
@@ -164,6 +187,9 @@ const SignUpModal: React.FC<{ close: () => void }> = ({ close }) => {
             name="lastname"
             icon={<PersonIcon />}
             onChange={onChange}
+            isValid={Boolean(formState.errors.lastname)}
+            useValidation
+            errorMessage={formState.errors.lastname?.message}
           />
         </div>
         <div className="input-wrapper">
@@ -179,6 +205,9 @@ const SignUpModal: React.FC<{ close: () => void }> = ({ close }) => {
                 <EyeIcon onClick={onClickToggleVisible} />
               )
             }
+            isValid={Boolean(formState.errors.password)}
+            useValidation
+            errorMessage={formState.errors.password?.message}
           />
         </div>
         <p className="sign-up-birthday-label">생일</p>

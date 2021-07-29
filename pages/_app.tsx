@@ -5,6 +5,7 @@ import { ColorMode, ThemeProvider } from "styled-components";
 import { useState } from "react";
 import { darkTheme, lightTheme } from "../styles/theme";
 import Header from "../components/Header";
+import { wrapper } from "../store";
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [theme, setTheme] = useState<ColorMode>("light");
@@ -19,4 +20,4 @@ function MyApp({ Component, pageProps }: AppProps) {
     </>
   );
 }
-export default MyApp;
+export default wrapper.withRedux(MyApp);

@@ -11,18 +11,20 @@ const api = (req: NextApiRequest, res: NextApiResponse) => {
       res.statusCode = 400;
       return res.send("필수 데이터가 없습니다.");
     }
-    const alreadyExist = Data.user.exist(email);
+    const alreadyExist = Data.user.exist({ email });
+
     if (alreadyExist) {
       res.statusCode = 409;
-      res.send("이미 가입된 이메일입니다.");
+      return res.send("이미 가입된 이메일입니다.");
     }
     const hasedPassword = bcrypt.hashSync(password, 8);
     const users = Data.user.getList();
     let userId;
+
     if (users.length === 0) {
       userId = 1;
     } else {
-      userId = users[users.length].id + 1;
+      userId = users[users.length - 1].id + 1;
     }
     const newUser: StoredUserType = {
       id: userId,
@@ -33,16 +35,20 @@ const api = (req: NextApiRequest, res: NextApiResponse) => {
       birthday,
       profileImage: "/static/image/default-profile.jpg",
     };
+
     Data.user.write([...users, newUser]);
     const token = jwt.sign(String(newUser.id), process.env.SECRET_KEY!);
-    res.setHeader(
-      "Set-Cookie",
-      `access_token=${token}; path=/; expires=${new Date(
-        Date.now() + 60 * 60 * 24 * 1000 * 3
-      )}; httponly`
-    );
+    const cookieContent = `access_token=${token};path=/; expires=${new Date(
+      Date.now() + 60 * 60 * 24 * 1000 * 3
+    ).toISOString()};httponly`;
 
-    return res.end();
+    res.setHeader("Set-Cookie", cookieContent);
+
+    const newUserWithoutPassword: Partial<Pick<StoredUserType, "password">> =
+      newUser;
+    delete newUserWithoutPassword.password;
+    res.statusCode = 201;
+    return res.send(newUser);
   }
   res.statusCode = 405;
   return res.end();
