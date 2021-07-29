@@ -6,8 +6,9 @@ import {
 } from "react-redux";
 import { applyMiddleware, combineReducers, createStore, Store } from "redux";
 import user from "./user";
+import authMode from "./auth.mode";
 
-const rootReducer = combineReducers({ user });
+const rootReducer = combineReducers({ user, authMode });
 export type RootState = ReturnType<typeof rootReducer>;
 
 let initialRootState: RootState;

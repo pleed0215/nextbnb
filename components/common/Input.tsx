@@ -1,5 +1,34 @@
-import React from "react";
+import React, { InputHTMLAttributes, useEffect } from "react";
 import styled, { css } from "styled-components";
+
+import {
+  Controller,
+  FieldValues,
+  Path,
+  UseControllerProps,
+  FieldPath,
+} from "react-hook-form";
+
+interface IProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  icon?: JSX.Element;
+  isValid: boolean;
+  useValidation: boolean;
+  errorMessage?: string;
+}
+
+type ControlledInputProps<
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+> = Omit<InputHTMLAttributes<HTMLInputElement>, "name" | "value"> &
+  UseControllerProps<TFieldValues, TName> & { label?: string } & IProps;
+
+const InputWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  &:not(:last-child) {
+    margin-bottom: 10px;
+  }
+`;
 
 type InputBlockProps = {
   iconExist?: boolean;
@@ -9,6 +38,7 @@ type InputBlockProps = {
 
 const InputBlock = styled.div<InputBlockProps>`
   position: relative;
+
   input {
     width: 100%;
     height: 46px;
@@ -23,7 +53,7 @@ const InputBlock = styled.div<InputBlockProps>`
   }
   svg {
     position: absolute;
-    top: 15px;
+    top: 17px;
     right: 11px;
     height: 46px;
   }
@@ -49,43 +79,67 @@ const InputBlock = styled.div<InputBlockProps>`
     `}
   ${({ useValidation, isValid, theme }) =>
     useValidation &&
-    !isValid &&
+    isValid &&
     css`
-      input {
+      input:focus {
         border-color: ${theme.palette.dark_cyan};
       }
     `}
 `;
 
-interface IProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  icon?: JSX.Element;
-  isValid: boolean;
-  validateMode?: boolean;
-  useValidation: boolean;
-  errorMessage?: string;
-}
+const Label = styled.label`
+  font-size: 1rem;
+  color: ${(props) => props.theme.color.secondary};
+  margin-bottom: 4px;
+`;
 
-const Input: React.FC<IProps> = ({
+type ControlledInputFuncType = <
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends Path<TFieldValues> = Path<TFieldValues>
+>(
+  props: ControlledInputProps<TFieldValues, TName>
+) => JSX.Element;
+
+const Input: ControlledInputFuncType = ({
+  control,
+  name,
+  defaultValue,
+  rules,
+  label,
   icon,
-  isValid = false,
-  validateMode,
-  useValidation = true,
+  useValidation,
+  isValid,
   errorMessage,
   ...rest
-}) => {
-  return (
-    <InputBlock
-      iconExist={!!icon}
-      isValid={isValid}
-      useValidation={useValidation && validateMode}
-    >
-      <input {...rest} />
-      {icon}
-      {useValidation && validateMode && !isValid && errorMessage && (
-        <p className="input-error-message">{errorMessage}</p>
-      )}
-    </InputBlock>
-  );
-};
+}) => (
+  <Controller
+    control={control}
+    render={({ field, fieldState }) => (
+      <InputWrapper>
+        {label && <Label htmlFor={name}>{label}</Label>}
+        <InputBlock
+          iconExist={!!icon}
+          isValid={isValid}
+          useValidation={useValidation}
+        >
+          <input
+            {...rest}
+            onBlur={field.onBlur}
+            onChange={field.onChange}
+            value={field.value as string | number}
+            ref={field.ref}
+          />
+          {icon}
+          {useValidation && !isValid && errorMessage && (
+            <p className="input-error-message">{errorMessage}</p>
+          )}
+        </InputBlock>
+      </InputWrapper>
+    )}
+    rules={rules}
+    name={name}
+    defaultValue={defaultValue}
+  />
+);
 
 export default Input;

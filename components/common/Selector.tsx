@@ -1,7 +1,7 @@
 import React from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
-const SelectorBlock = styled.div`
+const SelectorBlock = styled.div<{ isValid: boolean }>`
   width: 100%;
   height: 46px;
 
@@ -22,22 +22,38 @@ const SelectorBlock = styled.div`
       border-color: ${(props) => props.theme.palette.dark_cyan};
     }
   }
+  ${({ isValid, theme }) =>
+    isValid
+      ? css`
+          select {
+            border-color: ${theme.palette.gray_eb};
+            background-color: white;
+          }
+        `
+      : css`
+          select {
+            border-color: ${theme.palette.tawny} !important;
+            background-color: ${theme.palette.snow};
+          }
+        `}
 `;
 
 type SelectorProps = React.SelectHTMLAttributes<HTMLSelectElement> & {
   options?: string[];
   disabledOptions?: string[];
   value?: string;
+  isValid?: boolean;
 };
 
 const Selector: React.FC<SelectorProps> = ({
   options = [],
   disabledOptions = [],
   value,
+  isValid = true,
   ...rest
 }) => {
   return (
-    <SelectorBlock>
+    <SelectorBlock isValid={isValid}>
       <select {...rest}>
         {disabledOptions.map((option, index) => (
           <option key={index} value={option} disabled>

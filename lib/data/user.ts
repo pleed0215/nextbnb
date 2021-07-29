@@ -20,10 +20,10 @@ const getList = () => {
   return users;
 };
 
-type ExistUserInput = {
+type UserEmailInput = {
   email: string;
 };
-const exist = ({ email }: ExistUserInput) => {
+const exist = ({ email }: UserEmailInput) => {
   const users = getList();
   return users.some((user) => user.email === email);
 };
@@ -32,10 +32,16 @@ const write = (users: StoredUserType[]) => {
   writeFileSync("data/users.json", JSON.stringify(users));
 };
 
+const getUser = ({ email }: UserEmailInput) => {
+  const users = getList();
+  return users.find((user) => user.email === email);
+};
+
 const users = {
   getList,
   exist,
   write,
+  getUser,
 };
 
 export default users;

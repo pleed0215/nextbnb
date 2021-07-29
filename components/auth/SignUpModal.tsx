@@ -1,4 +1,9 @@
-import React, { ChangeEventHandler, useEffect, useState } from "react";
+import React, {
+  ChangeEventHandler,
+  FocusEventHandler,
+  useEffect,
+  useState,
+} from "react";
 import styled from "styled-components";
 import EmailIcon from "../../public/static/svg/email.svg";
 import PersonIcon from "../../public/static/svg/person.svg";
@@ -13,13 +18,14 @@ import Button from "../common/Button";
 import { signupAPI } from "../../lib/api/auth";
 import { useDispatch } from "react-redux";
 import { setLoggedUser } from "../../store/user";
+import { setAuthMode } from "../../store/auth.mode";
 
 const SignUpModalBlock = styled.div`
   width: 568px;
   height: 614px;
   background-color: white;
   padding: 32px;
-  z-index: 11;
+  z-index: 12;
 
   .modal-close-x-icon {
     cursor: pointer;
@@ -64,6 +70,12 @@ const SignUpModalBlock = styled.div`
     padding-bottom: 16px;
     border-bottom: 1px solid ${(props) => props.theme.palette.gray_eb};
   }
+
+  .sign-up-modal-set-login {
+    color: ${(props) => props.theme.palette.dark_cyan};
+    margin-left: 8px;
+    cursor: pointer;
+  }
 `;
 
 const SignUpModal: React.FC<{ close: () => void }> = ({ close }) => {
@@ -85,12 +97,42 @@ const SignUpModal: React.FC<{ close: () => void }> = ({ close }) => {
     day: "일",
     year: "년",
   };
-  const { register, handleSubmit, setValue, formState } = useForm<InputState>({
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState,
+    control,
+    trigger,
+    setError,
+  } = useForm<InputState>({
     defaultValues,
     mode: "onBlur",
   });
   const [hideText, setHideText] = useState(true);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    register("day", {
+      validate: {
+        mustHaveValue: (v) => v !== "일",
+      },
+    });
+    register("month", {
+      validate: {
+        mustHaveValue: (v) => v !== "월",
+      },
+    });
+    register("year", {
+      validate: {
+        mustHaveValue: (v) => v !== "년",
+      },
+    });
+  }, [register]);
+
+  const onClickLogin = () => {
+    dispatch(setAuthMode("login"));
+  };
 
   const onValid: SubmitHandler<InputState> = async (data) => {
     try {
@@ -102,6 +144,7 @@ const SignUpModal: React.FC<{ close: () => void }> = ({ close }) => {
       };
       const { data: user } = await signupAPI(signupBody);
       dispatch(setLoggedUser(user));
+      close();
     } catch (e) {
       console.log(e);
     }
@@ -114,37 +157,6 @@ const SignUpModal: React.FC<{ close: () => void }> = ({ close }) => {
     setHideText((prev) => !prev);
   };
 
-  useEffect(() => {
-    register("email", {
-      required: {
-        value: true,
-        message: "이메일을 입력해주세요.",
-      },
-    });
-    register("firstname", {
-      required: true,
-      maxLength: {
-        value: 20,
-        message: "너무 긴 이름입니다(20글자 이하)",
-      },
-    });
-    register("lastname", {
-      required: false,
-      maxLength: {
-        value: 20,
-        message: "너무 긴 이름입니다(20글자 이하)",
-      },
-    });
-    register("password", {
-      required: true,
-      minLength: 8,
-      maxLength: 20,
-    });
-    register("month");
-    register("year");
-    register("day");
-  });
-
   const onChange: ChangeEventHandler<HTMLInputElement | HTMLSelectElement> = ({
     target: { name, value },
   }) => {
@@ -152,48 +164,81 @@ const SignUpModal: React.FC<{ close: () => void }> = ({ close }) => {
     setValue(inputName, value);
   };
 
+  const onBlur: FocusEventHandler<HTMLInputElement | HTMLSelectElement> =
+    async ({ target: { name, value } }) => {
+      const inputName = name as keyof InputState;
+      const result = await trigger(inputName);
+      if (!result) {
+        setError(inputName, { type: "validate" });
+      }
+    };
+
   return (
     <SignUpModalBlock>
       <CloseXIcon className="modal-close-x-icon" onClick={close} />
       <form onSubmit={handleSubmit(onValid, onInvalid)}>
         <div className="input-wrapper">
           <Input
+            control={control}
             placeholder="이메일 주소"
             type="email"
             name="email"
             icon={<EmailIcon />}
             onChange={onChange}
-            isValid={Boolean(formState.errors.email)}
+            isValid={!Boolean(formState.errors.email)}
             useValidation
             errorMessage={formState.errors.email?.message}
+            rules={{
+              required: {
+                value: true,
+                message: "이메일을 입력해주세요.",
+              },
+            }}
           />
         </div>
         <div className="input-wrapper">
           <Input
+            control={control}
             placeholder="이름(예: 길동)"
             type="text"
             name="firstname"
             icon={<PersonIcon />}
             onChange={onChange}
-            isValid={Boolean(formState.errors.firstname)}
+            isValid={!Boolean(formState.errors.firstname)}
             useValidation
             errorMessage={formState.errors.firstname?.message}
+            rules={{
+              required: true,
+              maxLength: {
+                value: 20,
+                message: "너무 긴 이름입니다(20글자 이하)",
+              },
+            }}
           />
         </div>
         <div className="input-wrapper">
           <Input
+            control={control}
             placeholder="성(예: 홍)"
             type="text"
             name="lastname"
             icon={<PersonIcon />}
             onChange={onChange}
-            isValid={Boolean(formState.errors.lastname)}
+            isValid={!Boolean(formState.errors.lastname)}
             useValidation
             errorMessage={formState.errors.lastname?.message}
+            rules={{
+              required: false,
+              maxLength: {
+                value: 20,
+                message: "너무 긴 이름입니다(20글자 이하)",
+              },
+            }}
           />
         </div>
         <div className="input-wrapper">
           <Input
+            control={control}
             placeholder="비밀번호 설정하기"
             type={hideText ? "password" : "text"}
             name="password"
@@ -205,9 +250,14 @@ const SignUpModal: React.FC<{ close: () => void }> = ({ close }) => {
                 <EyeIcon onClick={onClickToggleVisible} />
               )
             }
-            isValid={Boolean(formState.errors.password)}
+            isValid={!Boolean(formState.errors.password)}
             useValidation
             errorMessage={formState.errors.password?.message}
+            rules={{
+              required: true,
+              minLength: 8,
+              maxLength: 20,
+            }}
           />
         </div>
         <p className="sign-up-birthday-label">생일</p>
@@ -223,6 +273,8 @@ const SignUpModal: React.FC<{ close: () => void }> = ({ close }) => {
               defaultValue="월"
               name="month"
               onChange={onChange}
+              onBlur={onBlur}
+              isValid={!Boolean(formState.errors.month)}
             />
           </div>
           <div className="sign-up-modal-birthday-day-selector">
@@ -232,6 +284,8 @@ const SignUpModal: React.FC<{ close: () => void }> = ({ close }) => {
               defaultValue="일"
               name="day"
               onChange={onChange}
+              onBlur={onBlur}
+              isValid={!Boolean(formState.errors.day)}
             />
           </div>
           <div className="sign-up-modal-birthday-year-selector">
@@ -241,6 +295,8 @@ const SignUpModal: React.FC<{ close: () => void }> = ({ close }) => {
               defaultValue="년"
               name="year"
               onChange={onChange}
+              onBlur={onBlur}
+              isValid={!!!Boolean(formState.errors.year)}
             />
           </div>
         </div>
@@ -248,6 +304,16 @@ const SignUpModal: React.FC<{ close: () => void }> = ({ close }) => {
           <Button type="submit">가입하기</Button>
         </div>
       </form>
+      <p>
+        이미 에어비엔비 계정이 있으신가요?
+        <span
+          className="sign-up-modal-set-login"
+          role="presentation"
+          onClick={onClickLogin}
+        >
+          로그인
+        </span>
+      </p>
     </SignUpModalBlock>
   );
 };
