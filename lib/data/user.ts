@@ -37,11 +37,17 @@ const getUser = ({ email }: UserEmailInput) => {
   return users.find((user) => user.email === email);
 };
 
+const getUserById = (id: number) => {
+  const users = getList();
+  return users.find((user) => user.id === id);
+};
+
 const users = {
   getList,
   exist,
   write,
   getUser,
+  getUserById,
 };
 
 export default users;

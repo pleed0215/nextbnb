@@ -4,11 +4,12 @@ import {
   TypedUseSelectorHook,
   useSelector as useReduxSelector,
 } from "react-redux";
-import { applyMiddleware, combineReducers, createStore, Store } from "redux";
+import { combineReducers, Store } from "redux";
 import user from "./user";
 import authMode from "./auth.mode";
+import registerRoom from "./register.room";
 
-const rootReducer = combineReducers({ user, authMode });
+const rootReducer = combineReducers({ user, authMode, registerRoom });
 export type RootState = ReturnType<typeof rootReducer>;
 
 let initialRootState: RootState;

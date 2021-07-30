@@ -4,3 +4,6 @@ POST http://localhost:3000/api/auth/signup
 {
     email: "pleed@naver.com"
 }
+
+###
+GET http://localhost:3000/api/auth/me

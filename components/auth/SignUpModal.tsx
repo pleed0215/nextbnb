@@ -20,6 +20,10 @@ import { useDispatch } from "react-redux";
 import { setLoggedUser } from "../../store/user";
 import { setAuthMode } from "../../store/auth.mode";
 
+const disabledMonth = ["월"];
+const disabledDay = ["일"];
+const disabledYear = ["년"];
+
 const SignUpModalBlock = styled.div`
   width: 568px;
   height: 614px;
@@ -110,6 +114,7 @@ const SignUpModal: React.FC<{ close: () => void }> = ({ close }) => {
     mode: "onBlur",
   });
   const [hideText, setHideText] = useState(true);
+  const [errorMsg, setErrorMsg] = useState("");
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -146,6 +151,11 @@ const SignUpModal: React.FC<{ close: () => void }> = ({ close }) => {
       dispatch(setLoggedUser(user));
       close();
     } catch (e) {
+      switch (e.response.status) {
+        default:
+          setErrorMsg("계정을 만들 수가 없습니다.");
+          break;
+      }
       console.log(e);
     }
   };
@@ -269,7 +279,7 @@ const SignUpModal: React.FC<{ close: () => void }> = ({ close }) => {
           <div className="sign-up-modal-birthday-month-selector">
             <Selector
               options={monthList}
-              disabledOptions={["월"]}
+              disabledOptions={disabledMonth}
               defaultValue="월"
               name="month"
               onChange={onChange}
@@ -280,7 +290,7 @@ const SignUpModal: React.FC<{ close: () => void }> = ({ close }) => {
           <div className="sign-up-modal-birthday-day-selector">
             <Selector
               options={dayList}
-              disabledOptions={["일"]}
+              disabledOptions={disabledDay}
               defaultValue="일"
               name="day"
               onChange={onChange}
@@ -291,7 +301,7 @@ const SignUpModal: React.FC<{ close: () => void }> = ({ close }) => {
           <div className="sign-up-modal-birthday-year-selector">
             <Selector
               options={yearList}
-              disabledOptions={["년"]}
+              disabledOptions={disabledYear}
               defaultValue="년"
               name="year"
               onChange={onChange}
@@ -314,6 +324,11 @@ const SignUpModal: React.FC<{ close: () => void }> = ({ close }) => {
           로그인
         </span>
       </p>
+      {errorMsg && (
+        <p style={{ color: "red", textAlign: "center", marginTop: 16 }}>
+          {errorMsg}
+        </p>
+      )}
     </SignUpModalBlock>
   );
 };

@@ -20,4 +20,4 @@ const Button: React.FC<ButtonProps> = ({ children, ...props }) => {
   return <ButtonBlock {...props}>{children}</ButtonBlock>;
 };
 
-export default Button;
+export default React.memo(Button);
