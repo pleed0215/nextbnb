@@ -7,7 +7,6 @@ const globalStyles = css`
     box-sizing: border-box;
   }
   body {
-    color: ${(props) => props.theme.palette};
     font-family: Noto Sans, Noto Sans KR;
   }
 `;

@@ -48,7 +48,7 @@ const RegisterSelectorStyle = css`
     -webkit-appearance: none;
     background-image: url("/static/svg/arrow-down.svg");
     background-position: right 14px center;
-    background-repeat: none;
+    background-repeat: no-repeat;
   }
 `;
 

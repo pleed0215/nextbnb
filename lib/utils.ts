@@ -13,3 +13,11 @@ export const cookieStringToObject = (cookieString: string | undefined) => {
   }
   return cookies;
 };
+
+export const getNumber = (str: string) => {
+  const numbers = str.match(/\d/g)?.join("");
+  if (numbers) {
+    return Number(numbers);
+  }
+  return null;
+};
