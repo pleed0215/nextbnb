@@ -91,6 +91,10 @@ const Label = styled.label`
   font-size: 1rem;
   color: ${(props) => props.theme.color.secondary};
   margin-bottom: 4px;
+  span {
+    display: block;
+    margin-bottom: 8px;
+  }
 `;
 
 type ControlledInputFuncType = <

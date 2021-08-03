@@ -2,10 +2,16 @@ import React, { ButtonHTMLAttributes } from "react";
 import styled, { css, DefaultTheme } from "styled-components";
 
 type PaletteColor = keyof DefaultTheme["palette"];
-const getButtonColor = (color: PaletteColor) => {
-  return css`
-    background-color: ${(props) => props.theme.palette[color]};
-  `;
+const getButtonColor = (color: PaletteColor, reverseColor: boolean = false) => {
+  return reverseColor
+    ? css`
+        color: ${(props) => props.theme.palette[color]};
+        background-color: white;
+        border: 1px solid ${(props) => props.theme.palette[color]};
+      `
+    : css`
+        background-color: ${(props) => props.theme.palette[color]};
+      `;
 };
 
 const NormalButtonStyle = css`
@@ -36,24 +42,43 @@ const RegisterButtonStyle = css`
 const ButtonBlock = styled.button<{
   color?: PaletteColor;
   styleType: "normal" | "register";
+  colorReverse?: boolean;
+  width?: string;
 }>`
   ${({ styleType }) =>
     styleType === "normal" ? NormalButtonStyle : RegisterButtonStyle};
-  ${({ color }) => (color ? getButtonColor(color) : undefined)};
+  ${({ color, colorReverse }) =>
+    color ? getButtonColor(color, colorReverse) : undefined};
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  ${({ width }) =>
+    width &&
+    css`
+      width: ${width};
+    `};
+  svg {
+    margin-right: 12px;
+  }
 `;
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   color?: PaletteColor;
+  colorReverse?: boolean;
   styleType?: "normal" | "register";
+  width?: string;
+  icon?: JSX.Element;
 }
 
 const Button: React.FC<ButtonProps> = ({
   children,
   styleType = "normal",
+  icon,
   ...props
 }) => {
   return (
     <ButtonBlock {...props} styleType={styleType}>
+      {icon}
       {children}
     </ButtonBlock>
   );
