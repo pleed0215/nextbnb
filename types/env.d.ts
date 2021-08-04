@@ -8,6 +8,9 @@ declare global {
       NODE_ENV: "production" | "development" | "test";
       NEXT_PUBLIC_API_URL: string;
       NEXT_PUBLIC_GOOGLE_API_KEY: string;
+      AWS_ACCESS_KEY: string;
+      AWS_SECRET_KEY: string;
+      S3_BUCKET_NAME: string;
     }
   }
 }

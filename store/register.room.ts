@@ -35,6 +35,8 @@ type RegisterRoomState = {
   amenities: string[];
   conveniences: string[];
   photos: string[];
+  description: string;
+  title: string;
 };
 
 const initialState: RegisterRoomState = {
@@ -59,7 +61,13 @@ const initialState: RegisterRoomState = {
   latitude: 0,
   amenities: [],
   conveniences: [],
-  photos: [],
+  photos: [
+    "https://nomadcoffee.s3.ap-northeast-2.amazonaws.com/1623391123113_1623296799231_nafinia-putra-Kwdp-0pok-I-unsplash.jpg",
+    "https://nomadcoffee.s3.ap-northeast-2.amazonaws.com/1623400647561_nafinia-putra-Kwdp-0pok-I-unsplash.jpg",
+    "https://nomadcoffee.s3.ap-northeast-2.amazonaws.com/1623391428371_kris-atomic-3b2tADGAWnU-unsplash.jpg",
+  ],
+  description: "",
+  title: "",
 };
 
 const SET_LARGE_BUILDING_TYPE = "register.room/SET_LARGE_BUILDING_TYPE";
@@ -84,6 +92,8 @@ const SET_LONGITUDE = "register.room/SET_LONGITUDE";
 const SET_AMENITIES = "register.room/SET_AMENITIES";
 const SET_CONVENIENCES = "register.room/SET_CONVENIENCES";
 const SET_PHOTOS = "register.room/SET_PHOTOS";
+const SET_DESCRIPTION = "register.room/SET_DESCRIPTION";
+const SET_TITLE = "register.room/SET_TITLE";
 
 export const setLargeBuildingType = createAction(
   SET_LARGE_BUILDING_TYPE,
@@ -181,6 +191,12 @@ export const setPhotos = createAction(
   (payload: string[]) => payload
 )();
 
+export const setDescription = createAction(
+  SET_DESCRIPTION,
+  (payload: string) => payload
+)();
+export const setTitle = createAction(SET_TITLE, (payload: string) => payload)();
+
 const actions = {
   setLargeBuildingType,
   setBuildingType,
@@ -204,6 +220,8 @@ const actions = {
   setAmenities,
   setConveniences,
   setPhotos,
+  setDescription,
+  setTitle,
 };
 type RegisterRoomAction = ActionType<typeof actions>;
 
@@ -318,6 +336,14 @@ const registerRoom = createReducer<RegisterRoomState, RegisterRoomAction>(
     [SET_PHOTOS]: (state, { payload }) =>
       produce(state, (draft) => {
         draft.photos = payload;
+      }),
+    [SET_DESCRIPTION]: (state, { payload }) =>
+      produce(state, (draft) => {
+        draft.description = payload;
+      }),
+    [SET_TITLE]: (state, { payload }) =>
+      produce(state, (draft) => {
+        draft.title = payload;
       }),
   }
 );

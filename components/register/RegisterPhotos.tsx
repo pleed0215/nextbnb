@@ -5,6 +5,9 @@ import styled from "styled-components";
 import { useSelector } from "../../store";
 import Button from "../common/Button";
 import UploadIcon from "../../public/static/svg/upload.svg";
+import { uploadFileAPI } from "../../lib/api/file";
+import { setPhotos } from "../../store/register.room";
+import RegisterRoomPhotoCardList from "./RegisterRoomPhotoCardList";
 
 const RegisterPhotosBlock = styled.div`
   padding: 62px 30px 100px;
@@ -54,9 +57,21 @@ const RegisterPhotos: React.FC = () => {
   }));
   const dispatch = useDispatch();
 
-  const onChangePhoto: ChangeEventHandler<HTMLInputElement> = (e) => {
+  const onChangePhoto: ChangeEventHandler<HTMLInputElement> = async (e) => {
     const { files } = e.target;
-    console.log(files);
+    if (files && files.length > 0) {
+      const file = files[0];
+      const formdata = new FormData();
+      formdata.append("file", file);
+      try {
+        const { data } = await uploadFileAPI(formdata);
+        if (data) {
+          dispatch(setPhotos([...photos, data]));
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    }
   };
 
   return (
@@ -77,6 +92,7 @@ const RegisterPhotos: React.FC = () => {
           </>
         </div>
       )}
+      {!isEmpty(photos) && <RegisterRoomPhotoCardList photos={photos} />}
     </RegisterPhotosBlock>
   );
 };
